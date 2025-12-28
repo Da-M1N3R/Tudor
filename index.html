@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tudor - To do it or not</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f0f2f5;
+        padding: 20px;
+        overflow-x: auto;
+      }
+
+      /* Header with hide functionality */
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 20px;
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .header.hidden {
+        transform: translateY(-150%);
+        opacity: 0;
+        pointer-events: none;
+        margin: 0;
+        padding: 0;
+        height: 0;
+        overflow: hidden;
+      }
+
+      h1 {
+        font-size: 2.8em;
+        margin-bottom: 5px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 1.2em;
+        opacity: 0.9;
+        font-weight: 300;
+      }
+
+      /* Controls - now sticky and adaptive */
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        position: sticky;
+        top: 20px;
+        z-index: 99;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s ease;
+      }
+
+      .controls.compact {
+        top: 10px;
+        padding: 8px;
+        gap: 8px;
+      }
+
+      button {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+        font-size: 14px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .toggle-btn {
+        background: #7f8c8d;
+        color: white;
+        padding: 10px 18px;
+        font-size: 13px;
+      }
+
+      .toggle-btn.active {
+        background: #3498db;
+      }
+
+      .btn-primary {
+        background: #3498db;
+        color: white;
+      }
+      .btn-success {
+        background: #27ae60;
+        color: white;
+      }
+      .btn-warning {
+        background: #f39c12;
+        color: white;
+      }
+      .btn-danger {
+        background: #e74c3c;
+        color: white;
+      }
+
+      /* Legend with hide functionality */
+      .legend {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: 900px;
+        margin: 0 auto 20px;
+        position: sticky;
+        top: 120px;
+        z-index: 98;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .legend.hidden {
+        transform: translateY(-150%);
+        opacity: 0;
+        pointer-events: none;
+        margin: 0;
+        padding: 0;
+        height: 0;
+        overflow: hidden;
+      }
+
+      .legend h3 {
+        text-align: center;
+        margin-bottom: 10px;
+        color: #2c3e50;
+        font-size: 1.1em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .legend-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 10px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        border-radius: 6px;
+        background: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .legend-item:hover {
+        background: #e3f2fd;
+        transform: scale(1.05);
+      }
+
+      .color-box {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        flex-shrink: 0;
+        border: 2px solid transparent;
+      }
+
+      .color-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #2c3e50;
+        border: none;
+        background: transparent;
+        width: 100%;
+        cursor: pointer;
+      }
+
+      .color-label:hover {
+        background: white;
+        border-radius: 3px;
+      }
+
+      /* FIXED: Year View Grid - Strict alignment */
+      .year-view {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
+      .month {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: all 0.3s;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .month:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .month-header {
+        background: #2c3e50;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        user-select: none;
+      }
+
+      .month-header:hover {
+        background: #3498db;
+      }
+
+      .month-header h2 {
+        font-size: 1.4em;
+        margin: 0;
+      }
+
+      .month-header .activity-count {
+        font-size: 0.8em;
+        opacity: 0.8;
+        margin-top: 5px;
+      }
+
+      /* FIXED: Days Grid - Strict 7-column layout */
+      .days-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 2px;
+        padding: 10px;
+        flex-grow: 1;
+        min-height: 0; /* Allow grid to shrink */
+      }
+
+      .day-header {
+        text-align: center;
+        font-weight: bold;
+        font-size: 0.75em;
+        color: #7f8c8d;
+        padding: 8px 2px;
+        text-transform: uppercase;
+        min-width: 0; /* Allow header to shrink */
+      }
+
+      /* FIXED: Day Cell - Locked size with overflow */
+      .day {
+        aspect-ratio: 1;
+        border: 2px solid #ecf0f1;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 4px;
+        min-width: 0; /* Allow day to shrink */
+        min-height: 0; /* Allow day to shrink */
+        overflow: hidden; /* CRITICAL: Prevent expansion */
+      }
+
+      .day:hover {
+        border-color: #3498db;
+        transform: scale(1.08);
+        z-index: 50;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        background: #f8f9fa;
+      }
+
+      .day-number {
+        font-size: 0.8em;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 2px;
+        flex-shrink: 0; /* Don't shrink day number */
+      }
+
+      /* FIXED: Day Content - Scrollable overflow */
+      .day-content {
+        width: 100%;
+        text-align: center;
+        font-size: 0.65em;
+        line-height: 1.2;
+        overflow-y: auto; /* Scroll if too much content */
+        overflow-x: hidden;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-height: 0; /* Allow content to shrink */
+        max-height: calc(100% - 20px); /* Don't overflow day cell */
+      }
+
+      /* Style scrollbar for day content */
+      .day-content::-webkit-scrollbar {
+        width: 3px;
+      }
+
+      .day-content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+
+      .day-content::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+      }
+
+      .activity-chip {
+        color: white;
+        padding: 2px 4px;
+        border-radius: 3px;
+        margin: 1px 0;
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        flex-shrink: 0; /* Don't shrink chips */
+      }
+
+      .activity-chip.badge {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        padding: 0;
+        font-size: 0.6em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      /* Busy day indicator */
+      .day.busy-1 {
+        border-left-width: 6px;
+      }
+      .day.busy-2 {
+        border-left-width: 6px;
+        border-top-width: 6px;
+      }
+      .day.busy-3 {
+        border-width: 6px 2px 2px 6px;
+      }
+
+      /* Month Detail View */
+      .month-detail-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        overflow-y: auto;
+        padding: 20px;
+      }
+
+      .month-detail {
+        background: white;
+        max-width: 1200px;
+        margin: 0 auto;
+        border-radius: 12px;
+        padding: 30px;
+        position: relative;
+      }
+
+      .month-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #3498db;
+      }
+
+      .month-detail-header h2 {
+        font-size: 2.5em;
+        color: #2c3e50;
+      }
+
+      .close-detail {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+
+      .month-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .detail-day {
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        padding: 15px;
+        min-height: 120px;
+        position: relative;
+        transition: all 0.2s;
+      }
+
+      .detail-day:hover {
+        border-color: #3498db;
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .detail-day-number {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 8px;
+      }
+
+      .detail-activities {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .detail-activity {
+        padding: 6px 10px;
+        border-radius: 5px;
+        color: white;
+        font-size: 0.85em;
+        font-weight: 500;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Quick Add Tooltip */
+      .quick-add {
+        display: none;
+        position: absolute;
+        background: #2c3e50;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.8em;
+        z-index: 200;
+        white-space: nowrap;
+        pointer-events: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        max-width: 450px;
+        width: 90%;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      .color-picker {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .color-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 2px solid transparent;
+      }
+
+      .color-option:hover {
+        background: #f8f9fa;
+      }
+
+      .color-option.selected {
+        border-color: #3498db;
+        background: #e3f2fd;
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .modal-buttons button {
+        flex: 1;
+      }
+
+      @media (max-width: 1400px) {
+        .year-view {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 900px) {
+        .year-view {
+          grid-template-columns: 1fr;
+        }
+        .month-detail-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .month-detail-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .legend-items {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media print {
+        body {
+          padding: 0;
+        }
+        .header,
+        .controls,
+        .legend {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Toggle Indicators -->
+    <!-- <div
+      class="header-toggle-indicator"
+      id="headerToggleIndicator"
+      style="display: none"
+      onclick="toggleHeader()"
+    >
+      Show Header
+    </div>
+    <div
+      class="legend-toggle-indicator"
+      id="legendToggleIndicator"
+      style="display: none"
+      onclick="toggleLegend()"
+    >
+      Show Legend
+    </div> -->
+
+    <!-- Year Picker -->
+    <div class="header" id="header">
+      <h1>Big A## Calendar <span id="currentYearDisplay">2026</span></h1>
+      <p>Plan Your Life Before Your Meetings</p>
+      <div style="margin-top: 15px">
+        <label style="font-weight: bold; margin-right: 10px">Year:</label>
+        <select
+          id="yearSelector"
+          style="
+            padding: 8px 15px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: none;
+          "
+          onchange="changeYear(this.value)"
+        >
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+          <option value="2029">2029</option>
+          <option value="2030">2030</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="controls" id="controls">
+      <button class="toggle-btn" onclick="toggleHeader()">
+        <span id="headerToggleIcon">📉</span> Header
+      </button>
+      <button class="toggle-btn" onclick="toggleLegend()">
+        <span id="legendToggleIcon">📉</span> Legend
+      </button>
+      <button class="btn-primary" onclick="clearAllActivities()">
+        Clear All
+      </button>
+      <button class="btn-success" onclick="exportAsImage()">
+        Save as Image
+      </button>
+      <button class="btn-warning" onclick="exportAsPDF()">Save as PDF</button>
+      <button class="btn-danger" onclick="resetColorLabels()">
+        Reset Labels
+      </button>
+    </div>
+
+    <div class="legend" id="legend">
+      <h3>Color Legend (Click to Edit)</h3>
+      <div class="legend-items" id="legendItems"></div>
+    </div>
+
+    <div class="year-view" id="calendar"></div>
+
+    <!-- Month Detail Overlay -->
+    <div class="month-detail-overlay" id="monthDetailOverlay">
+      <div class="month-detail">
+        <div class="month-detail-header">
+          <h2 id="detailMonthTitle"></h2>
+          <button class="close-detail" onclick="closeMonthDetail()">
+            ✕ Close
+          </button>
+        </div>
+        <div class="month-detail-grid" id="monthDetailGrid"></div>
+      </div>
+    </div>
+
+    <!-- Activity Modal -->
+    <div class="modal" id="activityModal">
+      <div class="modal-content">
+        <h3 id="modalTitle">Add Activity</h3>
+        <div class="form-group">
+          <label>Date:</label>
+          <input type="text" id="activityDate" readonly />
+        </div>
+        <div class="form-group">
+          <label>Activity:</label>
+          <input
+            type="text"
+            id="activityText"
+            placeholder="What are you doing?"
+          />
+        </div>
+        <div class="form-group">
+          <label>Category:</label>
+          <div class="color-picker" id="colorPicker"></div>
+          <input type="hidden" id="selectedColor" value="#3498db" />
+        </div>
+        <div id="activityList"></div>
+        <div class="modal-buttons">
+          <button class="btn-primary" onclick="saveActivity()">Save</button>
+          <button class="btn-warning" onclick="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-add" id="quickAdd"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+      const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+      const defaultColors = [
+        { color: "#3498db", label: "Family" },
+        { color: "#e74c3c", label: "Fitness" },
+        { color: "#2ecc71", label: "Work" },
+        { color: "#f39c12", label: "Travel" },
+        { color: "#9b59b6", label: "Personal" },
+        { color: "#1abc9c", label: "Goals" },
+      ];
+
+      let activities =
+        JSON.parse(localStorage.getItem("bigAssCalendarActivities")) || {};
+      let colorLabels = JSON.parse(
+        localStorage.getItem("bigAssCalendarColorLabels")
+      ) || [...defaultColors];
+      let currentEditingDate = null;
+      let currentDetailMonth = null;
+
+      // NEW: Dynamic year variable
+      let currentYear =
+        parseInt(localStorage.getItem("bigAssCalendarYear")) || 2025;
+
+      // NEW: Load year-specific activities
+      function loadYearData() {
+        const yearKey = `bigAssCalendarActivities_${currentYear}`;
+        activities = JSON.parse(localStorage.getItem(yearKey)) || {};
+      }
+
+      // NEW: Save year-specific activities
+      function saveYearData() {
+        const yearKey = `bigAssCalendarActivities_${currentYear}`;
+        localStorage.setItem(yearKey, JSON.stringify(activities));
+      }
+
+      // NEW: Change year function
+      function changeYear(newYear) {
+        currentYear = parseInt(newYear);
+        localStorage.setItem("bigAssCalendarYear", currentYear);
+        document.getElementById("currentYearDisplay").textContent = currentYear;
+        loadYearData();
+        generateCalendar();
+      }
+
+      // Check on this
+      let headerHidden =
+        localStorage.getItem("bigAssCalendarHeaderHidden") === "true";
+      let legendHidden =
+        localStorage.getItem("bigAssCalendarLegendHidden") === "true";
+
+      function generateCalendar() {
+        const container = document.getElementById("calendar");
+        container.innerHTML = "";
+
+        months.forEach((month, monthIndex) => {
+          const monthDiv = document.createElement("div");
+          monthDiv.className = "month";
+
+          const header = document.createElement("div");
+          header.className = "month-header";
+          const monthActivityCount = countMonthActivities(monthIndex);
+          header.innerHTML = `
+                    <h2>${month}</h2>
+                    <div class="activity-count">${monthActivityCount} activities</div>
+                `;
+          header.onclick = () => openMonthDetail(monthIndex);
+
+          const daysGrid = document.createElement("div");
+          daysGrid.className = "days-grid";
+
+          daysOfWeek.forEach((day) => {
+            const header = document.createElement("div");
+            header.className = "day-header";
+            header.textContent = day;
+            daysGrid.appendChild(header);
+          });
+
+          // NEW: Dynamic date calculations
+          const firstDay = new Date(currentYear, monthIndex, 1).getDay();
+          const daysInMonth = new Date(
+            currentYear,
+            monthIndex + 1,
+            0
+          ).getDate();
+
+          for (let i = 0; i < firstDay; i++) {
+            daysGrid.appendChild(createDayElement(null, monthIndex));
+          }
+
+          for (let day = 1; day <= daysInMonth; day++) {
+            daysGrid.appendChild(createDayElement(day, monthIndex));
+          }
+
+          monthDiv.appendChild(header);
+          monthDiv.appendChild(daysGrid);
+          container.appendChild(monthDiv);
+        });
+      }
+
+      function createDayElement(day, monthIndex) {
+        const dayDiv = document.createElement("div");
+        dayDiv.className = "day";
+
+        if (day === null) {
+          dayDiv.classList.add("empty");
+          return dayDiv;
+        }
+
+        const dateKey = `${currentYear}-${(monthIndex + 1)
+          .toString()
+          .padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+        dayDiv.dataset.date = dateKey;
+
+        const dayNumber = document.createElement("div");
+        dayNumber.className = "day-number";
+        dayNumber.textContent = day;
+        dayDiv.appendChild(dayNumber);
+
+        const dayContent = document.createElement("div");
+        dayContent.className = "day-content";
+
+        if (activities[dateKey]) {
+          dayDiv.classList.add("activity");
+
+          if (activities[dateKey].length >= 3) dayDiv.classList.add("busy-3");
+          else if (activities[dateKey].length >= 2)
+            dayDiv.classList.add("busy-2");
+          else if (activities[dateKey].length >= 1)
+            dayDiv.classList.add("busy-1");
+
+          activities[dateKey].slice(0, 2).forEach((activity) => {
+            const chip = document.createElement("div");
+            chip.className = "activity-chip";
+            chip.style.background = activity.color;
+            chip.textContent =
+              activity.text.length > 12
+                ? activity.text.substring(0, 12) + "..."
+                : activity.text;
+            dayContent.appendChild(chip);
+          });
+
+          if (activities[dateKey].length > 2) {
+            const badge = document.createElement("div");
+            badge.className = "activity-chip badge";
+            badge.style.background = "#2c3e50";
+            badge.textContent = `+${activities[dateKey].length - 2}`;
+            dayDiv.appendChild(badge);
+          }
+        }
+
+        dayDiv.appendChild(dayContent);
+
+        dayDiv.onmouseenter = (e) => showQuickAdd(e, dateKey);
+        dayDiv.onmouseleave = hideQuickAdd;
+        dayDiv.onclick = (e) => {
+          if (!e.target.classList.contains("activity-chip")) {
+            openModal(dateKey);
+          }
+        };
+
+        return dayDiv;
+      }
+
+      function countMonthActivities(monthIndex) {
+        let count = 0;
+        const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate();
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateKey = `${currentYear}-${(monthIndex + 1)
+            .toString()
+            .padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+          if (activities[dateKey]) count += activities[dateKey].length;
+        }
+        return count;
+      }
+
+      function toggleHeader() {
+        const header = document.getElementById("header");
+        const controls = document.getElementById("controls");
+        const indicator = document.getElementById("headerToggleIndicator");
+        const icon = document.getElementById("headerToggleIcon");
+
+        headerHidden = !headerHidden;
+        localStorage.setItem("bigAssCalendarHeaderHidden", headerHidden);
+
+        if (headerHidden) {
+          header.classList.add("hidden");
+          controls.classList.add("compact");
+          indicator.style.display = "block";
+          icon.textContent = "📈";
+        } else {
+          header.classList.remove("hidden");
+          controls.classList.remove("compact");
+          indicator.style.display = "none";
+          icon.textContent = "📉";
+        }
+      }
+
+      function toggleLegend() {
+        const legend = document.getElementById("legend");
+        const indicator = document.getElementById("legendToggleIndicator");
+        const icon = document.getElementById("legendToggleIcon");
+
+        legendHidden = !legendHidden;
+        localStorage.setItem("bigAssCalendarLegendHidden", legendHidden);
+
+        if (legendHidden) {
+          legend.classList.add("hidden");
+          indicator.style.display = "block";
+          icon.textContent = "📈";
+        } else {
+          legend.classList.remove("hidden");
+          indicator.style.display = "none";
+          icon.textContent = "📉";
+        }
+      }
+
+      function applySavedStates() {
+        if (headerHidden) {
+          toggleHeader();
+        }
+        if (legendHidden) {
+          toggleLegend();
+        }
+      }
+
+      function openMonthDetail(monthIndex) {
+        currentDetailMonth = monthIndex;
+        const overlay = document.getElementById("monthDetailOverlay");
+        const title = document.getElementById("detailMonthTitle");
+        const grid = document.getElementById("monthDetailGrid");
+
+        title.textContent = `${months[monthIndex]} ${currentYear}`;
+
+        grid.innerHTML = "";
+
+        daysOfWeek.forEach((day) => {
+          const header = document.createElement("div");
+          header.className = "day-header";
+          header.textContent = day;
+          grid.appendChild(header);
+        });
+
+        const firstDay = new Date(currentYear, monthIndex, 1).getDay();
+        const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) {
+          grid.appendChild(document.createElement("div"));
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateKey = `${currentYear}-${(monthIndex + 1)
+            .toString()
+            .padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+          const dayDiv = document.createElement("div");
+          dayDiv.className = "detail-day";
+
+          const dayNumber = document.createElement("div");
+          dayNumber.className = "detail-day-number";
+          dayNumber.textContent = day;
+          dayDiv.appendChild(dayNumber);
+
+          if (activities[dateKey]) {
+            const activitiesDiv = document.createElement("div");
+            activitiesDiv.className = "detail-activities";
+
+            activities[dateKey].forEach((activity) => {
+              const actDiv = document.createElement("div");
+              actDiv.className = "detail-activity";
+              actDiv.style.background = activity.color;
+              actDiv.textContent = activity.text;
+              activitiesDiv.appendChild(actDiv);
+            });
+
+            dayDiv.appendChild(activitiesDiv);
+          }
+
+          dayDiv.onclick = () => openModal(dateKey);
+          grid.appendChild(dayDiv);
+        }
+
+        overlay.style.display = "block";
+      }
+
+      function closeMonthDetail() {
+        document.getElementById("monthDetailOverlay").style.display = "none";
+        currentDetailMonth = null;
+      }
+
+      function showQuickAdd(e, dateKey) {
+        const tooltip = document.getElementById("quickAdd");
+        const activitiesList = activities[dateKey];
+
+        if (activitiesList) {
+          tooltip.innerHTML = activitiesList
+            .map(
+              (a) =>
+                `<div style="background:${a.color};padding:4px 8px;margin:2px 0;border-radius:3px;font-size:0.75em;">${a.text}</div>`
+            )
+            .join("");
+        } else {
+          tooltip.textContent = "Click to add activity";
+        }
+
+        tooltip.style.display = "block";
+        tooltip.style.left = e.pageX + 10 + "px";
+        tooltip.style.top = e.pageY + 10 + "px";
+      }
+
+      function hideQuickAdd() {
+        document.getElementById("quickAdd").style.display = "none";
+      }
+
+      function generateLegend() {
+        const legendItems = document.getElementById("legendItems");
+        legendItems.innerHTML = "";
+
+        colorLabels.forEach((item, index) => {
+          const legendItem = document.createElement("div");
+          legendItem.className = "legend-item";
+
+          const colorBox = document.createElement("div");
+          colorBox.className = "color-box";
+          colorBox.style.background = item.color;
+
+          const labelInput = document.createElement("input");
+          labelInput.type = "text";
+          labelInput.className = "color-label";
+          labelInput.value = item.label;
+          labelInput.dataset.index = index;
+
+          labelInput.addEventListener("input", (e) => {
+            colorLabels[index].label = e.target.value || "Unlabeled";
+            localStorage.setItem(
+              "bigAssCalendarColorLabels",
+              JSON.stringify(colorLabels)
+            );
+            generateColorPicker();
+          });
+
+          legendItem.appendChild(colorBox);
+          legendItem.appendChild(labelInput);
+          legendItems.appendChild(legendItem);
+        });
+      }
+
+      function generateColorPicker() {
+        const colorPicker = document.getElementById("colorPicker");
+        colorPicker.innerHTML = "";
+
+        colorLabels.forEach((item) => {
+          const colorOption = document.createElement("div");
+          colorOption.className = "color-option";
+          colorOption.dataset.color = item.color;
+
+          const colorBox = document.createElement("div");
+          colorBox.className = "color-box";
+          colorBox.style.background = item.color;
+
+          const label = document.createElement("div");
+          label.className = "color-option-label";
+          label.textContent = item.label;
+
+          colorOption.appendChild(colorBox);
+          colorOption.appendChild(label);
+
+          colorOption.onclick = () => {
+            document
+              .querySelectorAll(".color-option")
+              .forEach((opt) => opt.classList.remove("selected"));
+            colorOption.classList.add("selected");
+            document.getElementById("selectedColor").value = item.color;
+          };
+
+          colorPicker.appendChild(colorOption);
+        });
+
+        if (colorPicker.children.length > 0) {
+          colorPicker.children[0].classList.add("selected");
+        }
+      }
+
+      function openModal(date) {
+        currentEditingDate = date;
+        document.getElementById("activityModal").style.display = "flex";
+        document.getElementById("activityDate").value = formatDate(date);
+        document.getElementById("activityText").value = "";
+
+        generateColorPicker();
+        loadActivityList(date);
+      }
+
+      function closeModal() {
+        document.getElementById("activityModal").style.display = "none";
+        currentEditingDate = null;
+      }
+
+      function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      }
+
+      function saveActivity() {
+        const text = document.getElementById("activityText").value.trim();
+        const color = document.getElementById("selectedColor").value;
+
+        if (!text) {
+          alert("Please enter an activity");
+          return;
+        }
+
+        if (!activities[currentEditingDate]) {
+          activities[currentEditingDate] = [];
+        }
+
+        const colorLabel =
+          colorLabels.find((item) => item.color === color)?.label || "Activity";
+
+        activities[currentEditingDate].push({
+          text: text,
+          color: color,
+          label: colorLabel,
+          id: Date.now(),
+        });
+
+        saveYearData();
+
+        document.getElementById("activityText").value = "";
+        loadActivityList(currentEditingDate);
+        generateCalendar();
+
+        if (currentDetailMonth !== null) {
+          openMonthDetail(currentDetailMonth);
+        }
+      }
+
+      function loadActivityList(date) {
+        const listDiv = document.getElementById("activityList");
+        listDiv.innerHTML = "";
+
+        if (activities[date]) {
+          activities[date].forEach((activity) => {
+            const item = document.createElement("div");
+            item.className = "activity-item";
+            item.style.background = activity.color + "20";
+            item.innerHTML = `
+                        <span><strong>${activity.label}:</strong> ${activity.text}</span>
+                        <button class="delete-btn" onclick="deleteActivity('${date}', ${activity.id})">×</button>
+                    `;
+            listDiv.appendChild(item);
+          });
+        }
+      }
+
+      function deleteActivity(date, id) {
+        if (confirm("Delete this activity?")) {
+          activities[date] = activities[date].filter((a) => a.id !== id);
+          if (activities[date].length === 0) {
+            delete activities[date];
+          }
+          saveYearData();
+          loadActivityList(date);
+          generateCalendar();
+
+          if (currentDetailMonth !== null) {
+            openMonthDetail(currentDetailMonth);
+          }
+        }
+      }
+
+      function clearAllActivities() {
+        if (
+          confirm(
+            "Are you sure you want to clear ALL activities? This cannot be undone."
+          )
+        ) {
+          activities = {};
+          saveYearData();
+          generateCalendar();
+          if (currentDetailMonth !== null) {
+            openMonthDetail(currentDetailMonth);
+          }
+        }
+      }
+
+      function resetColorLabels() {
+        if (confirm("Reset color labels to defaults?")) {
+          colorLabels = [...defaultColors];
+          localStorage.setItem(
+            "bigAssCalendarColorLabels",
+            JSON.stringify(colorLabels)
+          );
+          generateLegend();
+          generateColorPicker();
+        }
+      }
+
+      async function exportAsImage() {
+        const button = event.target;
+        button.textContent = "Generating...";
+        button.disabled = true;
+
+        try {
+          const element =
+            currentDetailMonth !== null
+              ? document.getElementById("monthDetailGrid")
+              : document.getElementById("calendar");
+          const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff",
+          });
+
+          const link = document.createElement("a");
+          link.download =
+            currentDetailMonth !== null
+              ? `big-ass-calendar-${months[
+                  currentDetailMonth
+                ].toLowerCase()}-${currentYear}.png`
+              : `big-ass-calendar-${currentYear}.png`;
+          link.href = canvas.toDataURL();
+          link.click();
+        } catch (error) {
+          alert("Error generating image. Please try again.");
+        } finally {
+          button.textContent = "Save as Image";
+          button.disabled = false;
+        }
+      }
+
+      async function exportAsPDF() {
+        const button = event.target;
+        button.textContent = "Generating...";
+        button.disabled = true;
+
+        try {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF("l", "mm", "a4");
+
+          const element =
+            currentDetailMonth !== null
+              ? document.getElementById("monthDetailGrid")
+              : document.getElementById("calendar");
+          const canvas = await html2canvas(element, {
+            scale: 1,
+            useCORS: true,
+            backgroundColor: "#ffffff",
+          });
+
+          const imgData = canvas.toDataURL("image/png");
+          const imgWidth = 280;
+          const pageHeight = 200;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = 10;
+
+          pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+
+          while (heightLeft >= 0) {
+            position = heightLeft - imgHeight + 10;
+            pdf.addPage();
+            pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+          }
+
+          pdf.save(
+            currentDetailMonth !== null
+              ? `big-ass-calendar-${months[
+                  currentDetailMonth
+                ].toLowerCase()}-${currentYear}.pdf`
+              : `big-ass-calendar-${currentYear}.pdf`
+          );
+        } catch (error) {
+          alert("Error generating PDF. Please try again.");
+        } finally {
+          button.textContent = "Save as PDF";
+          button.disabled = false;
+        }
+      }
+
+      // Keyboard shortcuts
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeModal();
+          closeMonthDetail();
+        }
+        if (e.key === "h" || e.key === "H") {
+          toggleHeader();
+        }
+        if (e.key === "l" || e.key === "L") {
+          toggleLegend();
+        }
+      });
+
+      // Initialize
+      function init() {
+        // Set the year selector to current year
+        const yearSelector = document.getElementById("yearSelector");
+        yearSelector.value = currentYear;
+
+        // Load data for current year
+        loadYearData();
+
+        // Generate everything
+        generateLegend();
+        generateColorPicker();
+        generateCalendar();
+        applySavedStates();
+      }
+
+      init();
+    </script>
+  </body>
+</html>
