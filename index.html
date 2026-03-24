@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tudor</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #0d1117;
+        min-height: 100vh;
+        color: #c9d1d9;
+      }
+
+      /* Top Navigation Bar */
+      .top-nav {
+        background: #161b22;
+        border-bottom: 1px solid #30363d;
+        padding: 12px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .logo {
+        font-size: 1.5em;
+        font-weight: 700;
+        color: #58a6ff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .nav-buttons {
+        display: flex;
+        gap: 12px;
+      }
+
+      .nav-btn {
+        padding: 8px 16px;
+        border: 1px solid #30363d;
+        background: #21262d;
+        color: #c9d1d9;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .nav-btn:hover {
+        background: #30363d;
+        border-color: #58a6ff;
+        color: #58a6ff;
+      }
+
+      .nav-btn.primary {
+        background: #238636;
+        border-color: #238636;
+        color: white;
+      }
+
+      .nav-btn.primary:hover {
+        background: #2ea043;
+        border-color: #2ea043;
+      }
+
+      /* Menu Page */
+      .menu-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #f0f6fc;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 8px;
+        color: #58a6ff;
+      }
+
+      .header p {
+        color: #8b949e;
+      }
+
+      /* Database Section */
+      .database-section {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        padding: 25px;
+        margin-top: 20px;
+      }
+
+      .database-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .database-header h2 {
+        color: #f0f6fc;
+        font-size: 1.5em;
+      }
+
+      .folder-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #21262d;
+        color: #c9d1d9;
+      }
+
+      .btn:hover {
+        background: #30363d;
+        border-color: #58a6ff;
+      }
+
+      .btn-primary {
+        background: #238636;
+        border-color: #238636;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #2ea043;
+        border-color: #2ea043;
+      }
+
+      .btn-secondary {
+        background: #21262d;
+        border-color: #30363d;
+      }
+
+      .btn-danger {
+        background: #da3633;
+        border-color: #da3633;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #f85149;
+        border-color: #f85149;
+      }
+
+      .folder-tree {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .folder {
+        background: #0d1117;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #30363d;
+      }
+
+      .folder-header {
+        background: #21262d;
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .folder-header:hover {
+        background: #30363d;
+      }
+
+      .folder-name {
+        font-weight: 600;
+        font-size: 1em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #f0f6fc;
+      }
+
+      .folder-actions-small {
+        display: flex;
+        gap: 5px;
+      }
+
+      .folder-actions-small button {
+        padding: 4px 10px;
+        font-size: 11px;
+      }
+
+      .folder-content {
+        padding: 12px;
+        display: none;
+      }
+
+      .folder.expanded .folder-content {
+        display: block;
+      }
+
+      .doc-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .doc-item {
+        background: #161b22;
+        padding: 12px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid #30363d;
+      }
+
+      .doc-item:hover {
+        background: #21262d;
+        border-color: #58a6ff;
+      }
+
+      .doc-info h4 {
+        color: #58a6ff;
+        margin-bottom: 4px;
+        font-size: 1em;
+      }
+
+      .doc-info p {
+        font-size: 0.85em;
+        color: #8b949e;
+      }
+
+      .doc-actions {
+        display: flex;
+        gap: 5px;
+      }
+
+      /* Editor Page */
+      .editor-container {
+        display: none;
+        height: 100vh;
+        flex-direction: column;
+        background: #0d1117;
+      }
+
+      .editor-header {
+        background: #161b22;
+        border-bottom: 1px solid #30363d;
+        padding: 12px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .editor-title-input {
+        font-size: 1.3em;
+        border: none;
+        background: transparent;
+        color: #f0f6fc;
+        font-weight: 600;
+        width: 300px;
+        outline: none;
+      }
+
+      .editor-title-input::placeholder {
+        color: #484f58;
+      }
+
+      .editor-toolbar {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .toolbar-btn {
+        padding: 6px 12px;
+        border: 1px solid #30363d;
+        background: #21262d;
+        color: #c9d1d9;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 13px;
+        transition: all 0.2s;
+      }
+
+      .toolbar-btn:hover {
+        background: #30363d;
+        border-color: #58a6ff;
+      }
+
+      .toolbar-btn.active {
+        background: #58a6ff;
+        color: #0d1117;
+        border-color: #58a6ff;
+      }
+
+      .editor-body {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+      }
+
+      .editor-sidebar {
+        width: 260px;
+        background: #161b22;
+        padding: 20px;
+        overflow-y: auto;
+        border-right: 1px solid #30363d;
+      }
+
+      .editor-sidebar h3 {
+        margin-bottom: 12px;
+        color: #f0f6fc;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .folder-select {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #30363d;
+        margin-bottom: 20px;
+        font-size: 13px;
+        background: #0d1117;
+        color: #c9d1d9;
+      }
+
+      .editor-main {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background: #0d1117;
+      }
+
+      .editor-content {
+        background: #161b22;
+        min-height: 100%;
+        padding: 30px;
+        border-radius: 12px;
+        border: 1px solid #30363d;
+        outline: none;
+        line-height: 1.5;
+        font-size: 15px;
+        color: #c9d1d9;
+      }
+
+      .editor-content:focus {
+        border-color: #58a6ff;
+      }
+
+      .save-indicator {
+        font-size: 12px;
+        color: #8b949e;
+        margin-left: 10px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .save-indicator.show {
+        opacity: 1;
+      }
+
+      /* Tighter spacing for editor content */
+      .editor-content p {
+        margin: 0;
+        min-height: 1.5em;
+      }
+
+      .editor-content div {
+        margin: 0;
+      }
+
+      .editor-content br {
+        display: block;
+        content: "";
+        margin: 0;
+      }
+
+      .back-btn {
+        background: none;
+        border: none;
+        color: #8b949e;
+        font-size: 1em;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+
+      .back-btn:hover {
+        color: #f0f6fc;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #8b949e;
+      }
+
+      .empty-state h3 {
+        margin-bottom: 8px;
+        color: #484f58;
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background: #161b22;
+        border: 1px solid #30363d;
+        padding: 25px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 400px;
+      }
+
+      .modal-content h3 {
+        margin-bottom: 20px;
+        color: #f0f6fc;
+      }
+
+      .modal-input {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        background: #0d1117;
+        color: #c9d1d9;
+      }
+
+      .modal-input:focus {
+        outline: none;
+        border-color: #58a6ff;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* Code block styling in editor */
+      .editor-content pre {
+        background: #0d1117;
+        color: #c9d1d9;
+        padding: 16px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-family: "SF Mono", Monaco, "Courier New", monospace;
+        margin: 8px 0;
+        border: 1px solid #30363d;
+        font-size: 14px;
+      }
+
+      .editor-content code {
+        background: #343942;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: "SF Mono", Monaco, "Courier New", monospace;
+        font-size: 0.9em;
+        color: #f0f6fc;
+      }
+
+      .editor-content blockquote {
+        border-left: 3px solid #58a6ff;
+        padding-left: 16px;
+        margin: 8px 0;
+        color: #8b949e;
+        font-style: italic;
+      }
+
+      .editor-content ul,
+      .editor-content ol {
+        margin: 4px 0;
+        padding-left: 24px;
+      }
+
+      .editor-content li {
+        margin: 2px 0;
+      }
+
+      .editor-content h1,
+      .editor-content h2,
+      .editor-content h3 {
+        margin: 8px 0 4px 0;
+        color: #f0f6fc;
+      }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  </head>
+  <body>
+    <!-- Top Navigation -->
+    <div class="top-nav">
+      <div class="logo">
+        <span>⚡</span>
+        Tudor
+      </div>
+      <div class="nav-buttons">
+        <button class="nav-btn primary" onclick="createNewDoc()">
+          <span>+</span> New Doc
+        </button>
+        <button class="nav-btn" onclick="showDatabase()">
+          <span>🗂️</span> Database
+        </button>
+      </div>
+    </div>
+
+    <!-- Menu Page -->
+    <div id="menuPage" class="menu-container">
+      <!-- <div class="header">
+        <h1>⚡ Tudor</h1>
+        <p>Dark mode code documentation</p>
+      </div> -->
+
+      <!-- Database Section -->
+      <div id="databaseSection" class="database-section">
+        <div class="database-header">
+          <h2>📁 Your Documents</h2>
+          <div class="folder-actions">
+            <button class="btn btn-primary" onclick="createNewDoc()">
+              ➕ New Doc
+            </button>
+            <button class="btn btn-secondary" onclick="showCreateFolderModal()">
+              📁 New Folder
+            </button>
+          </div>
+        </div>
+
+        <div id="folderTree" class="folder-tree">
+          <!-- Folders will be populated here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Editor Page -->
+    <div id="editorPage" class="editor-container">
+      <div class="editor-header">
+        <button class="back-btn" onclick="backToMenu()">← Back</button>
+        <input
+          type="text"
+          id="docTitle"
+          class="editor-title-input"
+          placeholder="Untitled Document"
+        />
+        <div class="editor-toolbar">
+          <button class="toolbar-btn" onclick="formatText('bold')" title="Bold">
+            <b>B</b>
+          </button>
+          <button
+            class="toolbar-btn"
+            onclick="formatText('underline')"
+            title="Underline"
+          >
+            <u>U</u>
+          </button>
+          <button
+            class="toolbar-btn"
+            onclick="formatText('italic')"
+            title="Italic"
+          >
+            <i>I</i>
+          </button>
+          <button
+            class="toolbar-btn"
+            onclick="insertCodeBlock()"
+            title="Code Block"
+          >
+            { }
+          </button>
+          <button class="btn btn-primary" onclick="saveDocument()">
+            💾 Save
+          </button>
+        </div>
+      </div>
+
+      <div class="editor-body">
+        <div class="editor-sidebar">
+          <h3>📂 Location</h3>
+          <select id="folderSelect" class="folder-select">
+            <option value="default">Default Folder</option>
+          </select>
+
+          <h3>📝 Quick Tips</h3>
+          <p style="font-size: 0.85em; color: #8b949e; line-height: 1.6">
+            • <b>Bold</b> for important terms<br />
+            • <u>Underline</u> for key points<br />
+            • Code blocks for solutions<br />
+            • Ctrl+S to save
+          </p>
+        </div>
+        <div class="editor-main">
+          <div
+            id="editorContent"
+            class="editor-content"
+            contenteditable="true"
+            placeholder="Start typing your notes here..."
+          >
+            <!-- Content goes here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Folder Modal -->
+    <div id="folderModal" class="modal">
+      <div class="modal-content">
+        <h3>Create New Folder</h3>
+        <input
+          type="text"
+          id="folderNameInput"
+          class="modal-input"
+          placeholder="Folder name..."
+        />
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="createFolder()">
+            Create
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Data Structure
+      let data = {
+        folders: {
+          default: {
+            name: "Default Folder",
+            docs: [],
+          },
+        },
+        currentDoc: null,
+      };
+
+      // Firebase Config
+      const firebaseConfig = {
+        apiKey: "AIzaSyB1Jo9hyXNDTRkLEISmM7PS0SSIa3Y_jns",
+        authDomain: "tudor-64084.firebaseapp.com",
+        projectId: "tudor-64084",
+        storageBucket: "tudor-64084.firebasestorage.app",
+        messagingSenderId: "151246139111",
+        appId: "1:151246139111:web:f1c3756d77debbe4413c42",
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+      const auth = firebase.auth();
+
+      let currentUser = null;
+      let userId = null;
+
+      let autoSaveInterval = null;
+      let lastSavedContent = "";
+      let lastSavedTitle = "";
+
+      function startAutoSave() {
+        // Save every 3 seconds if content changed
+        autoSaveInterval = setInterval(() => {
+          const currentContent =
+            document.getElementById("editorContent").innerHTML;
+          const currentTitle = document.getElementById("docTitle").value;
+
+          // Only save if there's content and it's changed
+          if (
+            (currentContent && currentContent !== lastSavedContent) ||
+            currentTitle !== lastSavedTitle
+          ) {
+            saveDocument();
+            lastSavedContent = currentContent;
+            lastSavedTitle = currentTitle;
+          }
+        }, 3000); // 3 seconds
+      }
+
+      function stopAutoSave() {
+        if (autoSaveInterval) {
+          clearInterval(autoSaveInterval);
+          autoSaveInterval = null;
+        }
+      }
+
+      // Initialize auth and load data
+      function initAuth() {
+        auth
+          .signInAnonymously()
+          .then((userCredential) => {
+            currentUser = userCredential.user;
+            userId = currentUser.uid;
+            loadDataFromCloud();
+          })
+          .catch((error) => {
+            console.error("Auth error:", error);
+          });
+      }
+
+      // Load from Firestore
+      async function loadDataFromCloud() {
+        try {
+          const docRef = db.collection("users").doc(userId);
+          const doc = await docRef.get();
+
+          if (doc.exists) {
+            data = doc.data().tudorData;
+          } else {
+            // First time user - create default data
+            await docRef.set({ tudorData: data });
+          }
+          renderFolders();
+        } catch (error) {
+          console.error("Load error:", error);
+        }
+      }
+
+      // Save to Firestore
+      async function saveData() {
+        if (!userId) return;
+
+        try {
+          const docRef = db.collection("users").doc(userId);
+          await docRef.set({ tudorData: data });
+        } catch (error) {
+          console.error("Save error:", error);
+        }
+      }
+
+      // Navigation
+      function createNewDoc() {
+        data.currentDoc = null;
+        document.getElementById("docTitle").value = "";
+        document.getElementById("editorContent").innerHTML = "";
+        lastSavedContent = "";
+        lastSavedTitle = "";
+        updateFolderSelect();
+        showEditor();
+        startAutoSave();
+      }
+
+      function showEditor() {
+        document.getElementById("menuPage").style.display = "none";
+        document.getElementById("editorPage").style.display = "flex";
+      }
+
+      function backToMenu() {
+        stopAutoSave();
+        document.getElementById("editorPage").style.display = "none";
+        document.getElementById("menuPage").style.display = "block";
+        document.getElementById("databaseSection").style.display = "block";
+        renderFolders();
+      }
+
+      function showDatabase() {
+        document.getElementById("databaseSection").style.display = "block";
+        renderFolders();
+        document
+          .getElementById("databaseSection")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Editor Functions
+      function formatText(command) {
+        document.execCommand(command, false, null);
+        document.getElementById("editorContent").focus();
+      }
+
+      function insertCodeBlock() {
+        const editor = document.getElementById("editorContent");
+        const selection = window.getSelection();
+
+        const codeBlock = document.createElement("pre");
+        codeBlock.innerHTML = "<code>// Type your code here</code>";
+
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          range.deleteContents();
+          range.insertNode(codeBlock);
+
+          // Place cursor after code block
+          const newRange = document.createRange();
+          newRange.setStartAfter(codeBlock);
+          newRange.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(newRange);
+        } else {
+          editor.appendChild(codeBlock);
+        }
+      }
+
+      function updateFolderSelect() {
+        const select = document.getElementById("folderSelect");
+        select.innerHTML = "";
+        for (let key in data.folders) {
+          const option = document.createElement("option");
+          option.value = key;
+          option.textContent = data.folders[key].name;
+          select.appendChild(option);
+        }
+      }
+
+      function saveDocument() {
+        const title = document.getElementById("docTitle").value || "Untitled";
+        const content = document.getElementById("editorContent").innerHTML;
+        const folderId = document.getElementById("folderSelect").value;
+
+        const doc = {
+          id: data.currentDoc || Date.now().toString(),
+          title: title,
+          content: content,
+          folderId: folderId,
+          updatedAt: new Date().toLocaleString(),
+        };
+
+        // If editing existing doc, remove old version
+        if (data.currentDoc) {
+          for (let key in data.folders) {
+            data.folders[key].docs = data.folders[key].docs.filter(
+              (d) => d.id !== data.currentDoc,
+            );
+          }
+        }
+
+        // Add to selected folder
+        data.folders[folderId].docs.push(doc);
+        data.currentDoc = doc.id;
+
+        saveData();
+
+        // Show success feedback
+        const btn = document.querySelector(".editor-header .btn-primary");
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "✅ Saved!";
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+        }, 2000);
+      }
+
+      // Folder Management
+      function renderFolders() {
+        const tree = document.getElementById("folderTree");
+        tree.innerHTML = "";
+
+        for (let key in data.folders) {
+          const folder = data.folders[key];
+          const folderDiv = document.createElement("div");
+          folderDiv.className = "folder";
+          folderDiv.innerHTML = `
+                      <div class="folder-header" onclick="toggleFolder(this)">
+                          <div class="folder-name">
+                              <span>📁</span>
+                              ${folder.name} (${folder.docs.length})
+                          </div>
+                          <div class="folder-actions-small">
+                              ${key !== "default" ? `<button class="btn btn-danger" onclick="event.stopPropagation(); deleteFolder('${key}')">Delete</button>` : ""}
+                          </div>
+                      </div>
+                      <div class="folder-content">
+                          <div class="doc-list">
+                              ${
+                                folder.docs.length === 0
+                                  ? '<div class="empty-state"><h3>No documents yet</h3></div>'
+                                  : folder.docs
+                                      .map(
+                                        (doc) => `
+                                      <div class="doc-item" onclick="editDocument('${doc.id}')">
+                                          <div class="doc-info">
+                                              <h4>📝 ${doc.title}</h4>
+                                              <p>Last updated: ${doc.updatedAt}</p>
+                                          </div>
+                                          <div class="doc-actions">
+                                              <button class="btn btn-secondary" onclick="event.stopPropagation(); moveDocument('${doc.id}')">Move</button>
+                                              <button class="btn btn-danger" onclick="event.stopPropagation(); deleteDocument('${doc.id}')">Delete</button>
+                                          </div>
+                                      </div>
+                                  `,
+                                      )
+                                      .join("")
+                              }
+                          </div>
+                      </div>
+                  `;
+          tree.appendChild(folderDiv);
+        }
+      }
+
+      function toggleFolder(header) {
+        header.parentElement.classList.toggle("expanded");
+      }
+
+      function showCreateFolderModal() {
+        document.getElementById("folderModal").style.display = "flex";
+        document.getElementById("folderNameInput").focus();
+      }
+
+      function closeModal() {
+        document.getElementById("folderModal").style.display = "none";
+        document.getElementById("folderNameInput").value = "";
+      }
+
+      function createFolder() {
+        const name = document.getElementById("folderNameInput").value.trim();
+        if (name) {
+          const id = "folder_" + Date.now();
+          data.folders[id] = {
+            name: name,
+            docs: [],
+          };
+          saveData();
+          renderFolders();
+          closeModal();
+        }
+      }
+
+      function deleteFolder(folderId) {
+        if (
+          confirm(
+            "Delete this folder? Documents will be moved to Default Folder.",
+          )
+        ) {
+          const docs = data.folders[folderId].docs;
+          data.folders.default.docs.push(...docs);
+          delete data.folders[folderId];
+          saveData();
+          renderFolders();
+        }
+      }
+
+      // Document Management
+      function editDocument(docId) {
+        let doc = null;
+        for (let key in data.folders) {
+          doc = data.folders[key].docs.find((d) => d.id === docId);
+          if (doc) break;
+        }
+
+        if (doc) {
+          data.currentDoc = doc.id;
+          document.getElementById("docTitle").value = doc.title;
+          document.getElementById("editorContent").innerHTML = doc.content;
+          lastSavedContent = doc.content;
+          lastSavedTitle = doc.title;
+          updateFolderSelect();
+          document.getElementById("folderSelect").value = doc.folderId;
+          showEditor();
+          startAutoSave();
+        }
+      }
+
+      function deleteDocument(docId) {
+        if (confirm("Delete this document?")) {
+          for (let key in data.folders) {
+            data.folders[key].docs = data.folders[key].docs.filter(
+              (d) => d.id !== docId,
+            );
+          }
+          saveData();
+          renderFolders();
+        }
+      }
+
+      function moveDocument(docId) {
+        const newFolder = prompt(
+          "Enter folder name to move to (Default Folder, or your custom folder):",
+        );
+        if (newFolder) {
+          let doc = null;
+          let currentFolder = null;
+
+          for (let key in data.folders) {
+            const found = data.folders[key].docs.find((d) => d.id === docId);
+            if (found) {
+              doc = found;
+              currentFolder = key;
+              break;
+            }
+          }
+
+          if (doc) {
+            let targetKey = null;
+            for (let key in data.folders) {
+              if (
+                data.folders[key].name.toLowerCase() === newFolder.toLowerCase()
+              ) {
+                targetKey = key;
+                break;
+              }
+            }
+
+            if (targetKey && targetKey !== currentFolder) {
+              data.folders[currentFolder].docs = data.folders[
+                currentFolder
+              ].docs.filter((d) => d.id !== docId);
+              doc.folderId = targetKey;
+              data.folders[targetKey].docs.push(doc);
+              saveData();
+              renderFolders();
+            } else if (!targetKey) {
+              alert("Folder not found!");
+            }
+          }
+        }
+      }
+
+      // Close modal on outside click
+      window.onclick = function (event) {
+        const modal = document.getElementById("folderModal");
+        if (event.target === modal) {
+          closeModal();
+        }
+      };
+
+      // Initialize
+      initAuth();
+
+      // Keyboard shortcuts
+      document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey && e.key === "s") {
+          e.preventDefault();
+          if (document.getElementById("editorPage").style.display === "flex") {
+            saveDocument();
+          }
+        }
+      });
+
+      // Handle Enter key for tighter spacing
+      document
+        .getElementById("editorContent")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            // Let default behavior happen but ensure tight spacing
+            setTimeout(() => {
+              const selection = window.getSelection();
+              if (selection.rangeCount > 0) {
+                const node = selection.anchorNode;
+                if (node && node.parentElement) {
+                  node.parentElement.style.margin = "0";
+                  node.parentElement.style.minHeight = "1.5em";
+                }
+              }
+            }, 0);
+          }
+        });
+    </script>
+  </body>
+</html>
